@@ -37,8 +37,17 @@ Ship Ovo Timer 1.0.13 with +1/+2/+3 minute extensions during a running countdown
 src/web/app.js, index.html, styles.css; test/app-behavior.test.js; android/app/src/main/java/com/remriel/ovotimer/OvoAlarmScheduler.java.
 
 ## Next
-1. Commit and push, publish the public GitHub release, upload the APK to Drive,
-   and verify both remote copies.
+Completed. No implementation or publication work remains for version 1.0.13.
+
+## Release
+- Source commit: `167fa4e` plus the final handoff commit.
+- Public repository: https://github.com/remriel/ovo-timer-android
+- Public release: https://github.com/remriel/ovo-timer-android/releases/tag/v1.0.13
+- GitHub contains the APK, Windows installer, Windows portable executable, and
+  checksum manifest. GitHub's recorded digests match the local hashes.
+- Google Drive APK: https://drive.google.com/file/d/1Jrs1Yk3yjmIPp8RU3cBwkDITaeqOebXf/view?usp=drivesdk
+- Drive metadata readback confirms the APK title, Android package MIME type,
+  and exact 16,023,838-byte size. It is owner-only by default.
 
 ## Constraints / failed approaches
 VM tests must inject a clock-aware remainingFromEndTime wrapper because imported engine functions otherwise use the host Date clock.
