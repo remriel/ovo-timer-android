@@ -16,6 +16,13 @@ and is not affiliated with Ilumbo.
 
 <p align="center"><em>30:00 first ring · 45:00 outer ring halfway · 60:00 both complete</em></p>
 
+<p align="center">
+  <img src="docs/screenshots/ovo-add-time-running.png" alt="Ovo Timer running after two minutes were added" width="40%" />
+  <img src="docs/screenshots/ovo-add-time-cap.png" alt="Ovo Timer paused at the 60-minute addition limit" width="40%" />
+</p>
+
+<p align="center"><em>Add time without restarting · Hard stop at 60:00</em></p>
+
 ## What it does
 
 - Set a countdown from 10 seconds to 60 minutes by dragging the visible
@@ -29,6 +36,9 @@ and is not affiliated with Ilumbo.
 - Choose 1, 2, 3, 5, 10, 15, 20, 30, or 45-minute presets from a compact
   three-by-three shortcut grid. Selecting any preset immediately starts its
   countdown; no second tap on the dial is needed.
+- Add 1, 2, or 3 minutes while a countdown is running without restarting it.
+  Additions made while paused stay paused, and all additions hard-stop at
+  60:00. Reset still returns to the timer's originally selected duration.
 - Receive a 5+ second audible finish alarm. Android also schedules a native
   full-screen alarm that can wake the display while the app is backgrounded
   or the screen is locked. It loops alarm-volume sound and vibration until you

@@ -1,6 +1,6 @@
 {
   "name": "ovo-timer-windows",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "A bold, cross-platform Ovo Timer-inspired countdown timer for Windows and Android.",
   "private": true,
   "author": "Gev",
@@ -28,7 +28,7 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^7.4.3",
-    "electron": "^35.0.3",
+    "electron": "^44.3.0",
     "electron-builder": "^26.0.12",
     "png-to-ico": "^3.0.1"
   },
@@ -72,5 +72,14 @@
     "portable": {
       "artifactName": "OvoTimer-Portable-${version}-${arch}.${ext}"
     }
+  },
+  "overrides": {
+    "@capacitor/assets": {
+      "sharp": "^0.35.0"
+    },
+    "xcode": {
+      "uuid": "^11.1.1"
+    },
+    "tar": "^7.5.22"
   }
 }

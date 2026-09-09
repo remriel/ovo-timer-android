@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.13
+
+- Added dedicated +1, +2, and +3 minute controls that extend a running timer
+  without restarting it, or extend a paused timer without resuming it.
+- Capped additions at 60 minutes and disable the controls at the limit while
+  preserving the timer's original reset duration.
+- Serialized native alarm updates so rapid additions cannot leave Android with
+  an older deadline, and enabled exact alarms on Android API 23–30.
+- Fixed expired-pause handling, restored idle/finished snapshots, duplicate
+  alarm firing on foreground resume, repeated keyboard toggles, secondary
+  pointer input, focused-button Space handling, and stale accessibility time.
+- Removed the remaining small-screen decorative orange ring so the real two-lap
+  progress indicator remains visually accurate on Android.
+
 ## 1.0.12
 
 - Removed the permanently filled orange dial border that visually imitated a

@@ -30,6 +30,8 @@ const refs = {
   timerCaption: document.querySelector("#timerCaption"),
   liveStatus: document.querySelector("#liveStatus"),
   presetButtons: Array.from(document.querySelectorAll(".preset")),
+  addButtons: Array.from(document.querySelectorAll("[data-add-minutes]")),
+  addStatus: document.querySelector("#addStatus"),
   timerScreen: document.querySelector("#timerScreen"),
   settingsScreen: document.querySelector("#settingsScreen"),
   settingsButton: document.querySelector("#settingsButton"),
@@ -57,6 +59,8 @@ let phase = "idle";
 let dialGesture = null;
 let nativeAlarmRequest = 0;
 let nativeAlarmScheduled = false;
+let nativeAlarmQueue = Promise.resolve();
+let alarmAudio = null;
 let currentScreen = "timer";
 let theme = "dark";
 
@@ -152,10 +156,10 @@ function restoreState() {
     }
 
     totalSeconds = normalizeSeconds(saved.totalSeconds) || totalSeconds;
-    remainingSeconds = normalizeSeconds(saved.remainingSeconds);
+    remainingSeconds = normalizeSeconds(saved.remainingSeconds) || totalSeconds;
 
     if (saved.phase === "running" && Number.isFinite(saved.endTime)) {
-      endTime = saved.endTime;
+      endTime = Math.min(saved.endTime, Date.now() + MAX_SECONDS * 1000);
       remainingSeconds = remainingFromEndTime(endTime);
       if (remainingSeconds > 0) {
         phase = "running";
@@ -166,6 +170,11 @@ function restoreState() {
       }
     } else if (saved.phase === "paused" && remainingSeconds > 0) {
       phase = "paused";
+    } else if (saved.phase === "finished") {
+      phase = "finished";
+      remainingSeconds = 0;
+    } else {
+      remainingSeconds = totalSeconds;
     }
   } catch {
     // A corrupt prior snapshot should never prevent the timer from opening.
@@ -223,7 +232,13 @@ function render() {
   refs.timerValue.textContent = formatClock(activeSeconds);
   refs.timerCaption.textContent = copy.caption;
   refs.liveStatus.textContent = copy.live;
-  refs.dial.setAttribute("aria-valuenow", String(totalSeconds));
+  refs.dial.setAttribute("aria-valuenow", String(activeSeconds));
+  refs.addButtons.forEach((button) => {
+    button.disabled = !["running", "paused"].includes(phase) || remainingSeconds >= MAX_SECONDS;
+  });
+  refs.addStatus.textContent = remainingSeconds >= MAX_SECONDS && phase !== "finished"
+    ? "60-minute limit reached"
+    : phase === "running" ? "ADD TIME · KEEP GOING" : phase === "paused" ? "ADD TIME · STAY PAUSED" : "ADD TIME WHILE RUNNING";
   refs.dial.setAttribute("aria-valuetext", formatClock(activeSeconds) + (phase === "running" ? " remaining" : " selected"));
   setWindowTitle();
 }
@@ -308,9 +323,15 @@ async function requestNativeAlarmPriorityAccess() {
   }
 }
 
-async function cancelNativeAlarm() {
+function cancelNativeAlarm() {
   const request = ++nativeAlarmRequest;
   nativeAlarmScheduled = false;
+  stopAlarmAudio();
+  nativeAlarmQueue = nativeAlarmQueue.catch(() => undefined).then(() => cancelNativeAlarmNow(request));
+  return nativeAlarmQueue;
+}
+
+async function cancelNativeAlarmNow(request) {
 
   const alarm = nativeOvoAlarm();
   if (alarm) {
@@ -335,8 +356,16 @@ async function cancelNativeAlarm() {
   return request;
 }
 
-async function scheduleNativeAlarm() {
+function scheduleNativeAlarm() {
   const request = ++nativeAlarmRequest;
+  nativeAlarmQueue = nativeAlarmQueue.catch(() => undefined).then(() => {
+    if (request !== nativeAlarmRequest || phase !== "running") return;
+    return scheduleNativeAlarmNow(request);
+  });
+  return nativeAlarmQueue;
+}
+
+async function scheduleNativeAlarmNow(request) {
   const alarm = nativeOvoAlarm();
   if (alarm) {
     try {
@@ -347,7 +376,7 @@ async function scheduleNativeAlarm() {
       });
       if (phase === "running" && endTime && request === nativeAlarmRequest) {
         nativeAlarmScheduled = Boolean(result?.scheduled);
-        return;
+        if (nativeAlarmScheduled) return;
       }
     } catch {
       // The standard Capacitor notification remains a safety fallback.
@@ -408,6 +437,7 @@ function startTimer() {
   }
 
   if (phase === "finished" || remainingSeconds <= 0) {
+    void cancelNativeAlarm();
     remainingSeconds = totalSeconds;
   }
 
@@ -431,6 +461,10 @@ function pauseTimer() {
   }
 
   remainingSeconds = remainingFromEndTime(endTime);
+  if (remainingSeconds <= 0) {
+    finishTimer();
+    return;
+  }
   clearIntervalTimer();
   endTime = 0;
   phase = remainingSeconds > 0 ? "paused" : "finished";
@@ -485,6 +519,26 @@ function startPresetTimer(seconds) {
   return startLoadedTimer(setTimer(seconds));
 }
 
+function addMinutes(minutes) {
+  if (![1, 2, 3].includes(minutes) || !["running", "paused"].includes(phase)) return;
+  cancelDialGesture();
+  const now = Date.now();
+  if (phase === "running") {
+    if (endTime <= now) {
+      finishTimer();
+      return;
+    }
+    // Extend the existing deadline, preserving fractional seconds and elapsed time.
+    endTime = Math.min(endTime + minutes * 60_000, now + MAX_SECONDS * 1000);
+    remainingSeconds = remainingFromEndTime(endTime, now);
+    void scheduleNativeAlarm();
+  } else {
+    remainingSeconds = Math.min(MAX_SECONDS, remainingSeconds + minutes * 60);
+  }
+  saveState();
+  render();
+}
+
 function toggleTimer() {
   if (phase === "running") {
     pauseTimer();
@@ -492,6 +546,13 @@ function toggleTimer() {
   }
 
   startTimer();
+}
+
+function stopAlarmAudio() {
+  if (alarmAudio) {
+    void alarmAudio.close().catch(() => undefined);
+    alarmAudio = null;
+  }
 }
 
 function ringAlarm() {
@@ -502,6 +563,8 @@ function ringAlarm() {
     }
 
     const context = new AudioApi();
+    stopAlarmAudio();
+    alarmAudio = context;
     const master = context.createGain();
     master.gain.setValueAtTime(0.13, context.currentTime);
     master.connect(context.destination);
@@ -526,7 +589,9 @@ function ringAlarm() {
       oscillator.stop(start + duration);
     }
 
-    window.setTimeout(() => context.close(), 5600);
+    window.setTimeout(() => {
+      if (alarmAudio === context) stopAlarmAudio();
+    }, 5600);
   } catch {
     // Audio is a nice-to-have, and the visual/native notification still lands.
   }
@@ -541,6 +606,8 @@ async function notifyFinished() {
   try {
     const alarm = nativeOvoAlarm();
     if (alarm) {
+      // Android owns a scheduled alarm, including dismissal while the app is backgrounded.
+      if (nativeAlarmScheduled) return true;
       await alarm.fireNow(details);
       nativeAlarmScheduled = true;
       return true;
@@ -636,6 +703,7 @@ function dialPosition(event) {
 }
 
 function handleDialPointerDown(event) {
+  if (event.button !== 0 || event.isPrimary === false) return;
   cancelDialGesture();
   const position = dialPosition(event);
 
@@ -720,6 +788,7 @@ function finishDialGesture(event) {
 }
 
 function handleDialKeyboard(event) {
+  if (event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
   const largeStep = event.shiftKey ? 5 * 60 : 60;
   let handled = true;
 
@@ -750,6 +819,10 @@ refs.presetButtons.forEach((button) => {
   });
 });
 
+refs.addButtons.forEach((button) => {
+  button.addEventListener("click", () => addMinutes(Number(button.dataset.addMinutes)));
+});
+
 refs.dialRim.addEventListener("pointerdown", handleDialPointerDown);
 refs.dialRim.addEventListener("pointermove", handleDialPointerMove);
 refs.dialRim.addEventListener("pointerup", finishDialGesture);
@@ -770,8 +843,8 @@ window.addEventListener("blur", cancelDialGesture);
 
 window.addEventListener("keydown", (event) => {
   const target = event.target;
-  const editing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
-  if (event.defaultPrevented || editing || event.metaKey || event.ctrlKey || event.altKey) {
+  const editing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target?.isContentEditable;
+  if (event.defaultPrevented || event.repeat || editing || target?.closest?.("button, a, select") || currentScreen !== "timer" || event.metaKey || event.ctrlKey || event.altKey) {
     return;
   }
 

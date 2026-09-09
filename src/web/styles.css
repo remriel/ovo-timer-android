@@ -468,6 +468,22 @@ html.native-android .timer-dial {
   gap: 7px;
 }
 
+.add-time { width: 100%; margin-bottom: 18px; }
+.add-time p { margin: 0 0 8px; font-size: 0.68rem; font-weight: 900; letter-spacing: 0.08em; }
+.add-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+.add-button {
+  min-height: 46px; padding: 8px 2px; border: 3px solid var(--ink);
+  border-radius: 0; background: var(--yellow); color: var(--ink);
+  box-shadow: 3px 3px 0 var(--blue); cursor: pointer;
+  font-family: Impact, Arial Black, Arial, sans-serif; font-size: 1.35rem; font-weight: 900;
+}
+.add-button:nth-child(2) { background: var(--green); }
+.add-button:nth-child(3) { background: var(--orange); }
+.add-button span { font: 900 0.65rem Arial, sans-serif; }
+.add-button:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
+.add-button:enabled:active { transform: translate(3px, 3px); box-shadow: none; }
+.add-button:focus-visible { outline: 3px solid var(--cream); outline-offset: 2px; }
+
 .preset {
   min-height: 46px;
   padding: 6px 2px 4px;
@@ -814,7 +830,7 @@ html.native-android .timer-dial {
   .dial-progress {
     padding: 16px;
     border-width: 4px;
-    box-shadow: 0 0 0 8px var(--ink), 0 0 0 13px var(--orange);
+    box-shadow: 0 0 0 8px var(--ink);
   }
 
   .dial-face {

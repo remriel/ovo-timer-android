@@ -28,20 +28,18 @@
             android:launchMode="singleTop"
             android:showWhenLocked="true"
             android:theme="@style/AppTheme.Alarm"
-            android:turnScreenOn="true" />
+            android:turnScreenOn="true"
+        />
 
-        <receiver
-            android:name=".OvoAlarmReceiver"
-            android:exported="false" />
+        <receiver android:name=".OvoAlarmReceiver" android:exported="false" />
 
-        <receiver
-            android:name=".OvoAlarmStopReceiver"
-            android:exported="false" />
+        <receiver android:name=".OvoAlarmStopReceiver" android:exported="false" />
 
         <service
             android:name=".OvoAlarmService"
             android:exported="false"
-            android:foregroundServiceType="mediaPlayback" />
+            android:foregroundServiceType="mediaPlayback"
+        />
 
         <provider
             android:name="androidx.core.content.FileProvider"

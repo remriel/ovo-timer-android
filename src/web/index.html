@@ -23,7 +23,7 @@
                   class="timer-dial"
                   aria-label="Countdown clock"
                   aria-description="Tap the clock face to start or pause. Drag the colored progress band around its edge to choose a duration. Each full turn adds 30 minutes, with a hard stop at 60 minutes. Reverse the drag to reduce the time."
-                  aria-valuemin="10"
+                  aria-valuemin="0"
                   aria-valuemax="3600"
                   aria-valuenow="1500"
                   aria-valuetext="25 minutes"
@@ -45,6 +45,14 @@
 
           <aside class="side-panel" aria-label="One-tap countdown shortcuts">
             <section class="side-section">
+              <div class="add-time" role="group" aria-labelledby="addStatus">
+                <p id="addStatus">ADD TIME WHILE RUNNING</p>
+                <div class="add-grid">
+                  <button class="add-button" data-add-minutes="1" type="button" aria-label="Add 1 minute" disabled>+1 <span>MIN</span></button>
+                  <button class="add-button" data-add-minutes="2" type="button" aria-label="Add 2 minutes" disabled>+2 <span>MIN</span></button>
+                  <button class="add-button" data-add-minutes="3" type="button" aria-label="Add 3 minutes" disabled>+3 <span>MIN</span></button>
+                </div>
+              </div>
               <div class="preset-grid">
                 <button class="preset preset-blue" data-minutes="1" type="button">01<br /><span>MIN</span></button>
                 <button class="preset preset-yellow" data-minutes="2" type="button">02<br /><span>MIN</span></button>

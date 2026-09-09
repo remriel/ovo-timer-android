@@ -30,7 +30,7 @@ final class OvoAlarmScheduler {
         }
 
         PendingIntent alarmIntent = firePendingIntent(context, title, body);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && alarmManager.canScheduleExactAlarms()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, alarmIntent);
             return true;
         }

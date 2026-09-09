@@ -72,6 +72,7 @@ test("renders two independent duration laps without a permanently filled color r
   assert.match(styles, /\.selection-trace-inner\s*\{[^}]*inset:\s*-26px/s);
   assert.match(styles, /\.dial-progress\s*\{[^}]*box-shadow:\s*0 0 0 10px var\(--ink\)/s);
   assert.doesNotMatch(styles, /0 0 0 16px var\(--orange\)/);
+  assert.doesNotMatch(styles, /box-shadow:[^;]*var\(--orange\)/);
   assert.match(styles, /\.dial-face\s*\{[^}]*box-shadow:\s*inset 0 0 0 7px var\(--blue\)/s);
 });
 
