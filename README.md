@@ -2,6 +2,8 @@
 
 <p align="center"><img src="docs/screenshots/ovo-idle.png" width="270" alt="Ovo Timer countdown dial on Android" /></p>
 
+**[Download for Android or Windows](https://github.com/remriel/ovo-timer-android/releases/latest)** · [See the countdown dial](#screenshots) · [Build from source](#build)
+
 An original, cross-platform countdown timer that recreates the simple, direct
 gesture of the classic Android Ovo timer: choose a duration around the dial,
 release, and let the countdown run. This implementation is intentionally
@@ -69,3 +71,8 @@ The production backdrop, icon, and settings artwork in `assets/` were created
 specifically for this project. The application uses a colorful neo-brutalist
 print system: hard black outlines, offset shadows, vivid flat colors, and
 screenprint texture.
+
+## Related apps
+
+- [DictaTask for Android](https://github.com/remriel/dictatask-android-native): turn voice notes into actionable tasks.
+- [Codex Usage Counter](https://github.com/remriel/codex-usage-counter): track Codex usage from the Windows system tray.
