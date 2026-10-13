@@ -1,5 +1,7 @@
 # Ovo Timer
 
+<p align="center"><img src="docs/screenshots/ovo-idle.png" width="270" alt="Ovo Timer countdown dial on Android" /></p>
+
 An original, cross-platform countdown timer that recreates the simple, direct
 gesture of the classic Android Ovo timer: choose a duration around the dial,
 release, and let the countdown run. This implementation is intentionally
