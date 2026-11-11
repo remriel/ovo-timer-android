@@ -76,3 +76,5 @@ screenprint texture.
 
 - [DictaTask for Android](https://github.com/remriel/dictatask-android-native): turn voice notes into actionable tasks.
 - [Codex Usage Counter](https://github.com/remriel/codex-usage-counter): track Codex usage from the Windows system tray.
+
+If you find this project useful, you can [buy me a coffee](https://buymeacoffee.com/remriel).
