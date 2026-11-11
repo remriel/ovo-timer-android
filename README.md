@@ -77,6 +77,4 @@ screenprint texture.
 - [DictaTask for Android](https://github.com/remriel/dictatask-android-native): turn voice notes into actionable tasks.
 - [Codex Usage Counter](https://github.com/remriel/codex-usage-counter): track Codex usage from the Windows system tray.
 
-[![Buy me a coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/remriel)
-
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="remriel" data-color="#FFDD00" data-emoji="☕" data-font="Comic" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
+<a href="https://buymeacoffee.com/remriel"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy me a coffee" width="110"></a>
